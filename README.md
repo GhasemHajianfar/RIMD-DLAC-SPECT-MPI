@@ -116,41 +116,6 @@ python train.py \
   --input_type OSEM_3 \
   --num_input 3
 ```
-## Data Expectations for train model
-├── ATM
-│   ├── 00000.nii.gz
-│   ├── 00001.nii.gz
-│   └── ...
-├── MAC
-│   ├── OSEM_4I4S
-│   │   ├── 00000.nii.gz
-│   │   ├── 00001.nii.gz
-│   │   └── ...
-│   ├── OSEM_6I6S
-│   │   ├── 00000.nii.gz
-│   │   ├── 00001.nii.gz
-│   │   └── ...
-│   └── OSEM_8I8S
-│       ├── 00000.nii.gz
-│       ├── 00001.nii.gz
-│       └── ...
-├── NAC
-│   ├── OSEM_4I4S
-│   │   ├── 00000.nii.gz
-│   │   ├── 00001.nii.gz
-│   │   └── ...
-│   ├── OSEM_6I6S
-│   │   ├── 00000.nii.gz
-│   │   ├── 00001.nii.gz
-│   │   └── ...
-│   └── OSEM_8I8S
-│       ├── 00000.nii.gz
-│       ├── 00001.nii.gz
-│       └── ...
-└── NM
-    ├── 00000.dcm
-    ├── 00001.dcm
-    └── ...
 
 ### Inference with `inference_external.py` 
 
