@@ -1,4 +1,5 @@
 # RIMD-DLAC-SPECT-MPI
+Reconstruction-Informed and Multidomain Deep Learning for Generalizable CT-Free Attenuation Correction in SPECT Myocardial Perfusion Imaging
 
 End-to-end pipeline for SPECT attenuation correction (AC) with training, multi-input inference, and ensemble ATM → MAC reconstruction.
 
