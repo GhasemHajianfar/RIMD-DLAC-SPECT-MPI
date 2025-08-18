@@ -208,3 +208,14 @@ This project uses and acknowledges the following third‑party software:
 - MONAI — Medical Open Network for AI (https://github.com/Project-MONAI). Licensed under Apache‑2.0.
 - pytomography / SPECT reconstruction utilities (https://github.com/pytomography). Licensed under MIT.
 
+## Citation
+
+Hajianfar G, et al. Reconstruction-Informed and Multidomain Deep Learning for Generalizable CT-Free Attenuation Correction in SPECT Myocardial Perfusion Imaging. In submission.
+
+```bibtex
+@unpublished{hajianfar_in_submission,
+  author = {Hajianfar, G. and others},
+  title  = {Reconstruction-Informed and Multidomain Deep Learning for Generalizable CT-Free Attenuation Correction in SPECT Myocardial Perfusion Imaging},
+  note   = {In submission}
+}
+```
