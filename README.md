@@ -195,10 +195,6 @@ output_dir/exp_name/
     └── OSEM_8I8S/
 ```
 
-
-## Evaluation Utilities
-`evaluate.py` provides SSIM, PSNR, MAE/NMAE/NMSE helpers and “best model” selection utilities.
- 
 ## License
 
 This project is licensed under the Apache License, Version 2.0 (SPDX: Apache-2.0). See the included LICENSE file for full terms.
