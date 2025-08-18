@@ -176,7 +176,6 @@ def trainer(args):
             "OSEM_4I4S": {"ssim": -float("inf"), "mae": float("inf"), "mse": float("inf"), "psnr": -float("inf"), "rae": float("inf")},
             "OSEM_6I6S": {"ssim": -float("inf"), "mae": float("inf"), "mse": float("inf"), "psnr": -float("inf"), "rae": float("inf")},
             "OSEM_8I8S": {"ssim": -float("inf"), "mae": float("inf"), "mse": float("inf"), "psnr": -float("inf"), "rae": float("inf")},
-            "avg": {"ssim": -float("inf"), "mae": float("inf"), "mse": float("inf"), "psnr": -float("inf"), "rae": float("inf")}
         }
         
         best_metric_epochs = {
@@ -184,7 +183,6 @@ def trainer(args):
             "OSEM_4I4S": {"ssim": -float("inf"), "mae": float("inf"), "mse": float("inf"), "psnr": -float("inf"), "rae": float("inf")},
             "OSEM_6I6S": {"ssim": -float("inf"), "mae": float("inf"), "mse": float("inf"), "psnr": -float("inf"), "rae": float("inf")},
             "OSEM_8I8S": {"ssim": -float("inf"), "mae": float("inf"), "mse": float("inf"), "psnr": -float("inf"), "rae": float("inf")},
-            "avg": {"ssim": -float("inf"), "mae": float("inf"), "mse": float("inf"), "psnr": -float("inf"), "rae": float("inf")}
         }
         start_epoch = 0
         if args.resume_checkpoint:
@@ -194,7 +192,6 @@ def trainer(args):
                     torch.load(checkpoint_path), model, optimizer
                 )
                 print(f"Resumed training from checkpoint at epoch {start_epoch}...")
-
         for epoch in range(start_epoch, args.num_epochs):         
             model.train()
             epoch_loss = 0
