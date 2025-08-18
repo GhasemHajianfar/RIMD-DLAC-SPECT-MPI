@@ -35,6 +35,78 @@ pip install -r requirements.txt
 ```
 
 ## Training
+`train.py` is the training entry point. It reads paired input reconstructions and target attenuation maps, trains the model, saves checkpoints and logs to the experiment directory, and exports the best model (.pt).
+
+Required / important flags (used in the example):
+- --data_path_train: root folder containing training data (see "Data layout" below).
+- --exp_dir: base output directory where experiment folders, checkpoints and logs are written.
+- --exp: experiment name (subfolder under --exp_dir).
+- --input_type: input modality descriptor (e.g., OSEM_3 or a single OSEM variant).
+- --num_input: how many input channels (1 or 3 for multi-input with OSEM_4I4S/OSEM_6I6S/OSEM_8I8S).
+
+Common optional flags (may vary by implementation):
+- --batch_size, --epochs, --lr, --num_workers
+- --resume (path to checkpoint to continue training)
+- --pretrained (use a pretrained backbone)
+Check the header of train.py for the exact supported flags.
+
+Example:
+```bash
+python train.py \
+  --data_path_train /path/to/train \
+  --exp_dir /path/to/output \
+  --exp my_train_run \
+  --input_type OSEM_3 \
+  --num_input 3
+```
+
+What to expect in output
+- Checkpoints and training logs under: <exp_dir>/<exp>/<input_type>
+- Best model saved as a .pt file (name depends on train.py implementation).
+- TensorBoard (if enabled) logs in the experiment folder.
+
+Data layout and expectations for training
+- All NIfTI files should be .nii.gz. NM inputs are DICOM (.dcm) or DICOM series directories.
+- Filenames across modalities must correspond (e.g., 00000.nii.gz in ATM matches 00000.nii.gz in each MAC/NAC subfolder for that case).
+
+Recommended folder structure under --data_path_train:
+```
+/path/to/train/
+├── ATM/                       # target attenuation maps (NIfTI)
+│   ├── 00000.nii.gz
+│   ├── 00001.nii.gz
+│   └── ...
+├── MAC/                       # attenuation-corrected reconstructions (NIfTI)
+│   ├── OSEM_4I4S/
+│   │   ├── 00000.nii.gz
+│   │   └── ...
+│   ├── OSEM_6I6S/
+│   │   ├── 00000.nii.gz
+│   │   └── ...
+│   └── OSEM_8I8S/
+│       ├── 00000.nii.gz
+│       └── ...
+├── NAC/                       # non-attenuation-corrected reconstructions (NIfTI)
+│   ├── OSEM_4I4S/
+│   │   ├── 00000.nii.gz
+│   │   └── ...
+│   ├── OSEM_6I6S/
+│   │   ├── 00000.nii.gz
+│   │   └── ...
+│   └── OSEM_8I8S/
+│       ├── 00000.nii.gz
+│       └── ...
+└── NM/                        # raw NM DICOM inputs (per study)
+    ├── 00000.dcm  (or directory with DICOM files for study 00000)
+    ├── 00001.dcm
+    └── ...
+```
+
+Multi-input training notes
+- For num_input=3, the model expects NAC inputs from OSEM_4I4S, OSEM_6I6S and OSEM_8I8S as three aligned channels. Ensure each OSEM_* subfolder contains the same set of case IDs.
+- ATM targets must align with NAC/MAC case IDs.
+
+If the repo's train.py supports other options (augmentation, patching, normalization, custom samplers), consult the script's argument parser or top-of-file documentation to match flags to your desired behavior.
 Example (adjust paths/flags per your setup):
 ```bash
 python train.py \
