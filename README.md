@@ -3,6 +3,7 @@
 End-to-end pipeline for SPECT attenuation correction (AC) with training, multi-input inference, and ensemble ATM → MAC reconstruction.
 
 ## Repository Structure
+- `models/` – trained model artifacts and metadata used for inference
 - `train.py` – training entry point
 - `inference_external.py` – legacy inference/evaluation utilities
 - `inference_test.py` – production inference pipeline (multi-input + ensemble + NAC/ATM/MAC saving)
