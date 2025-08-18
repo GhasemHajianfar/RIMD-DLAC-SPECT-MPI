@@ -24,10 +24,10 @@ def run_inference_test():
     
     # Configuration - modify these paths according to your setup
     config = {
-        "nm_raw_dir": "/media/ghasem/Extreme SSD/deep_project/Cardiac/PsudoCT/external_ge/NIfTI/NM2",  # Directory containing NM raw files
-        "output_dir": "/media/ghasem/Extreme SSD/deep_project/Cardiac/PsudoCT/infer_test",   # Output directory for results
+        "nm_raw_dir": "/path/to/nm/files ",  # Directory containing NM raw files
+        "output_dir": "/path/to/output",   # Output directory for results
         "exp_name": "test_ge",               # Experiment name
-        "model_dir": "/media/ghasem/Extreme SSD/deep_project/Cardiac/PsudoCT/test_model/train/ATM_AC_loss/OSEM_3",        # Directory containing trained model files
+        "model_dir": "/path/to/models",        # Directory containing trained model files
         "colimator": "G8-LEHR",                      # Collimator type
         "num_workers": 4                             # Number of workers for data loading
     }
@@ -120,16 +120,12 @@ def print_usage():
     print("="*60)
     print("The script will create the following directory structure:")
     print("output_dir/exp_name/")
-    print("├── NM/                    # Copied NM raw files")
-    print("├── NAC/                   # NAC reconstructions")
+    print("├── NM/                   # Copied NM raw files")
+    print("├── NAC/                  # NAC reconstructions")
     print("│   ├── OSEM_4I4S/        # 4 iterations, 4 subsets")
     print("│   ├── OSEM_6I6S/        # 6 iterations, 6 subsets")
     print("│   └── OSEM_8I8S/        # 8 iterations, 8 subsets")
-    print("├── ATM_predictions/       # Individual model ATM predictions")
-    print("│   ├── model1.pt/        # Predictions from model 1")
-    print("│   ├── model2.pt/        # Predictions from model 2")
-    print("│   └── ...               # Predictions from other models")
-    print("├── ATM_ensemble/         # Ensemble ATM predictions (averaged)")
+    print("├── ATM/                  # Ensemble ATM predictions (averaged)")
     print("└── MAC/                  # AC reconstructions")
     print("    ├── OSEM_4I4S/        # AC with 4 iterations, 4 subsets")
     print("    ├── OSEM_6I6S/        # AC with 6 iterations, 6 subsets")
