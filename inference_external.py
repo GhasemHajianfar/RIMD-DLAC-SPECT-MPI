@@ -236,7 +236,7 @@ def tester(args):
     loss_function = torch.nn.L1Loss()
 
     # Initialize best metrics dictionaries
-    model_dir = str(outpath).replace(args.exp, 'train')
+    model_dir = args.model_dir
     model_files = [
             f for f in os.listdir(model_dir) if f.endswith(".pt")
         ]
@@ -280,6 +280,7 @@ def __main__():
         type=str,
         help="experiment name (a folder will be created with this name to store the results)",
     )
+    parser.add_argument("--model_dir", default="/path/to/models_dir", type=Path, help="Path to the directory containing the trained models") 
     parser.add_argument(
         "--num_input", default=3, type=int, help="Number of inputs 1 or 3"
     )
@@ -298,7 +299,6 @@ def __main__():
     parser.add_argument(
         "--colimator", default='G8-LEHR', type=str, help="Colimator type"
     )
-
     #
     args = parser.parse_args()
     tester(args)
