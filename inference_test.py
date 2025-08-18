@@ -255,7 +255,6 @@ def generate_ac_reconstructions(
             recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch = spect_ac_recon(
                 val_raw, val_labels, 1, 3, 'OSEM_3', val_labels, args.colimator
             )
-            
             # Save AC reconstructions
             settings = [
                 (recon_ac_44_batch, "OSEM_4I4S"),
