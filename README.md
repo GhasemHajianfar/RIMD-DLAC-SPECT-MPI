@@ -9,6 +9,7 @@ End-to-end pipeline for SPECT attenuation correction (AC) with training, multi-i
 - `inference_external.py` – legacy inference/evaluation utilities
 - `inference_test.py` – production inference pipeline (multi-input + ensemble + NAC/ATM/MAC saving)
 - `evaluate.py` – metrics and model evaluation helpers
+- `image_evaluation.py` - calculate image evaluation metric
 - `utils.py` – shared transforms and IO helpers
 - `requirements.txt` – pinned runtime dependencies
 
