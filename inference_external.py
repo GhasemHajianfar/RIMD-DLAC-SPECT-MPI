@@ -57,7 +57,9 @@ def reconstruct_ac(
             val_data["output"].to(device),
         )
         if num_input == 1:
-            recon_ac_batch = spect_ac_recon(val_raw, atm_output, 1, num_input, input_type, val_labels, args.colimator)
+            recon_ac_batch = spect_ac_recon(
+                val_raw, atm_output, 1, num_input, input_type, val_labels, args.colimator, args.energy_keV
+            )
             batch = {"image": val_inputs, "label": val_labels, "pred": recon_ac_batch}
             for key in batch:
                 batch[key] = batch[key][0]
@@ -66,7 +68,9 @@ def reconstruct_ac(
         else:
             raw = val_data["raw"]
             val_labels = val_data["label"].to(device)
-            recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch = spect_ac_recon(raw, atm_output, 1, num_input, input_type, val_labels,'G8-LEHR')
+            recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch = spect_ac_recon(
+                raw, atm_output, 1, num_input, input_type, val_labels, 'G8-LEHR', args.energy_keV
+            )
             prediction_dir_ac_44 =prediction_dir_ac[0]
             os.makedirs(prediction_dir_ac_44, exist_ok=True)
             prediction_dir_ac_66 = prediction_dir_ac[1]
@@ -299,9 +303,11 @@ def __main__():
     parser.add_argument(
         "--colimator", default='G8-LEHR', type=str, help="Colimator type"
     )
+    parser.add_argument(
+        "--energy_keV", default=140.5, type=float, help="Photopeak energy in keV used for PSF modelling"
+    )
     #
     args = parser.parse_args()
     tester(args)
 if __name__ == "__main__":
     __main__()
-

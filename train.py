@@ -215,7 +215,7 @@ def trainer(args):
                         loss = 0
                         if args.indirect:
                             if args.ac_loss:
-                                recon_ac_batch=spect_ac_recon(raw, outputs,batch_size,num_input,input_type,labels, args.colimator)
+                                recon_ac_batch=spect_ac_recon(raw, outputs,batch_size,num_input,input_type,labels, args.colimator, args.energy_keV)
                                 loss_ac = loss_function(recon_ac_batch, ac)
                                 loss += loss_ac
                             if args.atm_loss:
@@ -240,7 +240,7 @@ def trainer(args):
                         loss = 0
                         if args.indirect:
                             if args.ac_loss:
-                                recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch=spect_ac_recon(raw, outputs,batch_size,num_input,input_type,labels, args.colimator)
+                                recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch=spect_ac_recon(raw, outputs,batch_size,num_input,input_type,labels, args.colimator, args.energy_keV)
                                 loss_44 = loss_function(recon_ac_44_batch, ac_44)
                                 loss_66 = loss_function(recon_ac_66_batch, ac_66)
                                 loss_88 = loss_function(recon_ac_88_batch, ac_88)
@@ -287,7 +287,7 @@ def trainer(args):
                                 vloss = 0
                                 if args.indirect:
                                     if args.ac_loss:
-                                        recon_ac_batch=spect_ac_recon(val_raw, output,1,num_input,input_type,val_labels, args.colimator)
+                                        recon_ac_batch=spect_ac_recon(val_raw, output,1,num_input,input_type,val_labels, args.colimator, args.energy_keV)
                                         vloss += loss_function(recon_ac_batch, val_ac)
                                         calculate_metrics(val_ac, recon_ac_batch, metrics, input_type,loss_function,device)
                                     if args.atm_loss:
@@ -314,7 +314,7 @@ def trainer(args):
                                 vloss = 0
                                 if args.indirect:
                                     if args.ac_loss:
-                                        recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch=spect_ac_recon(raw, output,1,num_input,input_type,val_labels,args.colimator)
+                                        recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch=spect_ac_recon(raw, output,1,num_input,input_type,val_labels,args.colimator, args.energy_keV)
                                         calculate_metrics(ac_44, recon_ac_44_batch, metrics, 'OSEM_4I4S',loss_function,device)
                                         calculate_metrics(ac_66, recon_ac_66_batch, metrics, 'OSEM_6I6S',loss_function,device)
                                         calculate_metrics(ac_88, recon_ac_88_batch, metrics, 'OSEM_8I8S',loss_function,device)
@@ -469,10 +469,11 @@ def __main__():
     parser.add_argument(
         "--colimator", default='SY-LEHR', type=str, help="Colimator type"
     )
+    parser.add_argument(
+        "--energy_keV", default=140.5, type=float, help="Photopeak energy in keV used for PSF modelling"
+    )
 
     args = parser.parse_args()
     trainer(args)
 if __name__ == "__main__":
     __main__()
-
-

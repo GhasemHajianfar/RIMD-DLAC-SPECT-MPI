@@ -106,7 +106,9 @@ def evaluate_model(
                 )
                 output = model(val_inputs)
                 if args.indirect:
-                    recon_ac_batch = spect_ac_recon(val_raw, output, 1, num_input, input_type, val_labels, args.colimator)
+                    recon_ac_batch = spect_ac_recon(
+                        val_raw, output, 1, num_input, input_type, val_labels, args.colimator, args.energy_keV
+                    )
                     calculate_metrics_final(
                         model_name, val_ac, recon_ac_batch, metrics, input_type, loss_function, device
                     )
@@ -135,7 +137,7 @@ def evaluate_model(
                     val_labels = val_data["label"].to(device)
                     output = model(val_inputs)
                     recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch = spect_ac_recon(
-                        raw, output, 1, num_input, input_type, val_labels, args.colimator
+                        raw, output, 1, num_input, input_type, val_labels, args.colimator, args.energy_keV
                     )
                     calculate_metrics_final(
                         model_name, ac_44, recon_ac_44_batch, metrics, 'OSEM_4I4S', loss_function, device
@@ -176,5 +178,4 @@ def evaluate_model(
                 os.makedirs(os.path.join(prediction_dir_atm, model_name), exist_ok=True)
                 apply_post_transforms_ac(batch, os.path.join(prediction_dir_atm, model_name), val_transforms_save)
     return metrics
-
 

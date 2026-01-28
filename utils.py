@@ -70,7 +70,7 @@ def nmae(sr_image, gt_image):
     mae_ = (sr_image - gt_image).abs().mean().item()
     return mae_ / (gt_image.abs().max().item())
 
-def spect_ac_recon(raw,outputs,bs,num_input,input_type,labels,colimator):
+def spect_ac_recon(raw,outputs,bs,num_input,input_type,labels,colimator,energy_keV=140.5):
     from pytomography.io.SPECT import dicom
     from pytomography.transforms.SPECT import SPECTAttenuationTransform, SPECTPSFTransform
     from pytomography.algorithms import OSEM
@@ -90,7 +90,7 @@ def spect_ac_recon(raw,outputs,bs,num_input,input_type,labels,colimator):
         label0=labels[i]
         object_meta, proj_meta = dicom.get_metadata(raw0, index_peak=0)
         photopeak = dicom.get_projections(raw0, index_peak=0)
-        psf_meta = dicom.get_psfmeta_from_scanner_params(colimator, energy_keV=140.5)
+        psf_meta = dicom.get_psfmeta_from_scanner_params(colimator, energy_keV=energy_keV)
         psf_transform = SPECTPSFTransform(psf_meta)
         att_transform = SPECTAttenuationTransform(outputs0[0])
         system_matrix_ac = SPECTSystemMatrix(
@@ -138,7 +138,7 @@ def spect_ac_recon(raw,outputs,bs,num_input,input_type,labels,colimator):
         return recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch
     
 
-def reconstruct_nm_to_nac(raw_file_path, output_dir, colimator='G8-LEHR'):
+def reconstruct_nm_to_nac(raw_file_path, output_dir, colimator='G8-LEHR', energy_keV=140.5):
     """
     Reconstruct NM raw file to NAC images in 3 different OSEM settings
     """
@@ -156,7 +156,7 @@ def reconstruct_nm_to_nac(raw_file_path, output_dir, colimator='G8-LEHR'):
     # Get metadata and projections
     object_meta, proj_meta = dicom.get_metadata(raw_file_path, index_peak=0)
     photopeak = dicom.get_projections(raw_file_path, index_peak=0)
-    psf_meta = dicom.get_psfmeta_from_scanner_params(colimator, energy_keV=140.5)
+    psf_meta = dicom.get_psfmeta_from_scanner_params(colimator, energy_keV=energy_keV)
     psf_transform = SPECTPSFTransform(psf_meta)
     # Create system matrix for NAC reconstruction (no attenuation)
 
@@ -307,4 +307,3 @@ def convert_dicom_to_nifti(input_dir, output_dir):
                 # Write NIfTI file
                 sitk.WriteImage(image, output_file)
                 print(f"Converted {root} to {output_file}")
-

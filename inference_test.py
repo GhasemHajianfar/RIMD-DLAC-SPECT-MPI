@@ -253,7 +253,7 @@ def generate_ac_reconstructions(
             
             # Generate AC reconstructions for all 3 settings
             recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch = spect_ac_recon(
-                val_raw, val_labels, 1, 3, 'OSEM_3', val_labels, args.colimator
+                val_raw, val_labels, 1, 3, 'OSEM_3', val_labels, args.colimator, args.energy_keV
             )
             # Save AC reconstructions
             settings = [
@@ -298,7 +298,7 @@ def process_nm_files_test(args):
     # Step 1: Reconstruct NM to NAC for each raw file
     for nm_file in nm_files:
         print(f"\nProcessing: {os.path.basename(nm_file)}")
-        reconstruct_nm_to_nac(nm_file, output_base, args.colimator)
+        reconstruct_nm_to_nac(nm_file, output_base, args.colimator, args.energy_keV)
     
     # Step 2: Generating ATM predictions for each model
     print(f"\nStep 2: Generating ATM predictions for each model...")
@@ -401,6 +401,12 @@ def main():
         default='G8-LEHR',
         type=str,
         help="Collimator type for SPECT reconstruction"
+    )
+    parser.add_argument(
+        "--energy_keV",
+        default=140.5,
+        type=float,
+        help="Photopeak energy in keV used for PSF modelling"
     )
     parser.add_argument(
         "--num_workers",

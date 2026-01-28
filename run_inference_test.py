@@ -29,6 +29,7 @@ def run_inference_test():
         "exp_name": "test_ge",               # Experiment name
         "model_dir": "/path/to/models",        # Directory containing trained model files
         "colimator": "G8-LEHR",                      # Collimator type
+        "energy_keV": 140.5,                          # Photopeak energy in keV
         "num_workers": 4                             # Number of workers for data loading
     }
     
@@ -40,6 +41,7 @@ def run_inference_test():
         "--exp_name", config["exp_name"],
         "--model_dir", config["model_dir"],
         "--colimator", config["colimator"],
+        "--energy_keV", str(config["energy_keV"]),
         "--num_workers", str(config["num_workers"])
     ]
     
@@ -49,6 +51,7 @@ def run_inference_test():
     print(f"Experiment Name: {config['exp_name']}")
     print(f"Model Directory: {config['model_dir']}")
     print(f"Collimator: {config['colimator']}")
+    print(f"Energy (keV): {config['energy_keV']}")
     print(f"Number of Workers: {config['num_workers']}")
     print("\nCommand:")
     print(" ".join(cmd))
@@ -97,7 +100,8 @@ def print_usage():
     print("    --nm_raw_dir /path/to/nm/files \\")
     print("    --output_dir /path/to/output \\")
     print("    --exp_name ensemble_test \\")
-    print("    --model_dir /path/to/models/")
+    print("    --model_dir /path/to/models/ \\")
+    print("    --energy_keV 140.5")
     
     print("\n2. Custom Collimator:")
     print("python inference_test.py \\")
@@ -105,7 +109,8 @@ def print_usage():
     print("    --output_dir /path/to/output \\")
     print("    --exp_name custom_collimator \\")
     print("    --model_dir /path/to/models/ \\")
-    print("    --colimator G8-LEHR")
+    print("    --colimator G8-LEHR \\")
+    print("    --energy_keV 140.5")
     
     print("\n3. Custom Workers:")
     print("python inference_test.py \\")
