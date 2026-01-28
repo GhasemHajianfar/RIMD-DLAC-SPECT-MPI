@@ -289,16 +289,28 @@ def process_nm_files_test(args):
     os.makedirs(os.path.join(output_base, "MAC"), exist_ok=True)
     
     # Copy NM raw files to output directory
-    nm_files = sorted(glob.glob(os.path.join(args.nm_raw_dir, "*.*")))
+    # Accept files with or without an extension and search subfolders (GE NM raw often lives inside a patient folder)
+    nm_files = sorted(glob.glob(os.path.join(args.nm_raw_dir, "**", "*"), recursive=True))
+    nm_files = [f for f in nm_files if os.path.isfile(f)]
     for nm_file in nm_files:
         shutil.copy2(nm_file, os.path.join(output_base, "NM"))
     
     print(f"Processing {len(nm_files)} NM raw files...")
     
     # Step 1: Reconstruct NM to NAC for each raw file
+    successful_nm_files = []
     for nm_file in nm_files:
         print(f"\nProcessing: {os.path.basename(nm_file)}")
-        reconstruct_nm_to_nac(nm_file, output_base, args.colimator, args.energy_keV)
+        try:
+            reconstruct_nm_to_nac(nm_file, output_base, args.colimator, args.energy_keV)
+            successful_nm_files.append(nm_file)
+        except Exception as exc:
+            print(f"  Skipped {nm_file} — reconstruction failed: {exc}")
+            # Remove copied raw to keep NM directory aligned
+            copied = os.path.join(output_base, "NM", os.path.basename(nm_file))
+            if os.path.exists(copied):
+                os.remove(copied)
+            continue
     
     # Step 2: Generating ATM predictions for each model
     print(f"\nStep 2: Generating ATM predictions for each model...")
@@ -318,7 +330,7 @@ def process_nm_files_test(args):
     print(f"\nStep 4: Preparing data for AC reconstruction...")
     
     # Get the ensemble ATM predictions and raw files
-    raw_files = sorted(glob.glob(os.path.join(output_base, "NM", "*.*")))
+    raw_files = sorted(glob.glob(os.path.join(output_base, "NM", "*")))
     nac_44_files = sorted(glob.glob(os.path.join(output_base, "NAC/OSEM_4I4S", "*.nii.gz")))
     nac_66_files = sorted(glob.glob(os.path.join(output_base, "NAC/OSEM_6I6S", "*.nii.gz")))
     nac_88_files = sorted(glob.glob(os.path.join(output_base, "NAC/OSEM_8I8S", "*.nii.gz")))
