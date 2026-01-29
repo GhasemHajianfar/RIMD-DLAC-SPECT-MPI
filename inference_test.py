@@ -292,14 +292,25 @@ def process_nm_files_test(args):
     # Accept files with or without an extension and search subfolders (GE NM raw often lives inside a patient folder)
     nm_files = sorted(glob.glob(os.path.join(args.nm_raw_dir, "**", "*"), recursive=True))
     nm_files = [f for f in nm_files if os.path.isfile(f)]
+
+    copied_nm_files = []
     for nm_file in nm_files:
-        shutil.copy2(nm_file, os.path.join(output_base, "NM"))
+        rel = os.path.relpath(nm_file, args.nm_raw_dir)
+        parts = rel.split(os.sep)
+        if len(parts) > 1:
+            base_name = parts[0]
+        else:
+            base_name = os.path.splitext(os.path.basename(nm_file))[0]
+        ext = os.path.splitext(nm_file)[1]
+        dest_path = os.path.join(output_base, "NM", base_name + ext)
+        shutil.copy2(nm_file, dest_path)
+        copied_nm_files.append(dest_path)
     
     print(f"Processing {len(nm_files)} NM raw files...")
     
     # Step 1: Reconstruct NM to NAC for each raw file
     successful_nm_files = []
-    for nm_file in nm_files:
+    for nm_file in copied_nm_files:
         print(f"\nProcessing: {os.path.basename(nm_file)}")
         try:
             reconstruct_nm_to_nac(nm_file, output_base, args.colimator, args.energy_keV)
@@ -307,9 +318,8 @@ def process_nm_files_test(args):
         except Exception as exc:
             print(f"  Skipped {nm_file} — reconstruction failed: {exc}")
             # Remove copied raw to keep NM directory aligned
-            copied = os.path.join(output_base, "NM", os.path.basename(nm_file))
-            if os.path.exists(copied):
-                os.remove(copied)
+            if os.path.exists(nm_file):
+                os.remove(nm_file)
             continue
     
     # Step 2: Generating ATM predictions for each model
