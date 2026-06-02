@@ -35,6 +35,16 @@ def load_checkpoint(checkpoint, model, optimizer):
     return (checkpoint['epoch'], checkpoint['best_metrics'], checkpoint['best_metric_epochs'], 
             checkpoint['epoch_loss_values'], checkpoint['val_epoch_loss_values'])
 
+def combine_weighted_losses(loss_ac=None, loss_atm=None, lambda_ac=0.5, lambda_atm=0.5):
+    if loss_ac is None and loss_atm is None:
+        raise ValueError("At least one of loss_ac or loss_atm must be provided.")
+    total_loss = 0
+    if loss_ac is not None:
+        total_loss += lambda_ac * loss_ac
+    if loss_atm is not None:
+        total_loss += lambda_atm * loss_atm
+    return total_loss
+
 def trainer(args):
     logging.basicConfig(stream=sys.stdout, level=logging.INFO)
     outpath = os.path.join(args.exp_dir, args.exp,"ATM_AC_loss",args.input_type)
@@ -212,19 +222,24 @@ def trainer(args):
                         )
                         optimizer.zero_grad()
                         outputs = model(inputs)
-                        loss = 0
+                        loss_ac = None
+                        loss_atm = None
                         if args.indirect:
                             if args.ac_loss:
                                 recon_ac_batch=spect_ac_recon(raw, outputs,batch_size,num_input,input_type,labels, args.colimator, args.energy_keV)
                                 loss_ac = loss_function(recon_ac_batch, ac)
-                                loss += loss_ac
                             if args.atm_loss:
                                 loss_atm = loss_function(outputs, labels)
-                                loss += loss_atm
+                            loss = combine_weighted_losses(
+                                loss_ac=loss_ac,
+                                loss_atm=loss_atm,
+                                lambda_ac=args.lambda_ac,
+                                lambda_atm=args.lambda_atm,
+                            )
                         else:
                             print('Train in Direct method:')
                             loss_ac = loss_function(outputs, ac)
-                            loss += loss_ac
+                            loss = loss_ac
                     else:
                         image_44 = batch_data["image_44"].to(device)  # shape: 4*1*64*64*64
                         image_66 = batch_data["image_66"].to(device)  # shape: 4*1*64*64*64
@@ -237,17 +252,25 @@ def trainer(args):
                         raw=batch_data["raw"]
                         optimizer.zero_grad()
                         outputs = model(inputs)
-                        loss = 0
+                        loss_ac = None
+                        loss_atm = None
                         if args.indirect:
                             if args.ac_loss:
                                 recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch=spect_ac_recon(raw, outputs,batch_size,num_input,input_type,labels, args.colimator, args.energy_keV)
                                 loss_44 = loss_function(recon_ac_44_batch, ac_44)
                                 loss_66 = loss_function(recon_ac_66_batch, ac_66)
                                 loss_88 = loss_function(recon_ac_88_batch, ac_88)
-                                loss += loss_44+loss_66+loss_88
+                                loss_ac = loss_44 + loss_66 + loss_88
                             if args.atm_loss:
                                 loss_atm = loss_function(outputs, labels)
-                                loss += loss_atm
+                            loss = combine_weighted_losses(
+                                loss_ac=loss_ac,
+                                loss_atm=loss_atm,
+                                lambda_ac=args.lambda_ac,
+                                lambda_atm=args.lambda_atm,
+                            )
+                        else:
+                            raise ValueError("Three-input training is only implemented for indirect mode.")
                     loss.backward()
                     optimizer.step()
                     epoch_loss += loss.item()
@@ -284,20 +307,26 @@ def trainer(args):
                                         val_data["label"].to(device),
                                         )
                                 output = model(val_inputs)
-                                vloss = 0
+                                vloss_ac = None
+                                vloss_atm = None
                                 if args.indirect:
                                     if args.ac_loss:
                                         recon_ac_batch=spect_ac_recon(val_raw, output,1,num_input,input_type,val_labels, args.colimator, args.energy_keV)
-                                        vloss += loss_function(recon_ac_batch, val_ac)
+                                        vloss_ac = loss_function(recon_ac_batch, val_ac)
                                         calculate_metrics(val_ac, recon_ac_batch, metrics, input_type,loss_function,device)
                                     if args.atm_loss:
                                         vloss_atm = loss_function(output, val_labels)
-                                        vloss+=vloss_atm
+                                    vloss = combine_weighted_losses(
+                                        loss_ac=vloss_ac,
+                                        loss_atm=vloss_atm,
+                                        lambda_ac=args.lambda_ac,
+                                        lambda_atm=args.lambda_atm,
+                                    )
                                 else:
                                     print('Validate in Direct method:')
                                     vloss_ac = loss_function(output, val_ac)
                                     calculate_metrics(val_ac, output, metrics, input_type,loss_function,device)
-                                    vloss += vloss_ac
+                                    vloss = vloss_ac
 
                             else:
                                 image_44 = val_data["image_44"].to(device)  # shape: 4*1*64*64*64
@@ -307,11 +336,12 @@ def trainer(args):
                                 ac_44 = val_data["ac44"].to(device)  # shape: 4*1*64*64*64
                                 ac_66 = val_data["ac66"].to(device)  # shape: 4*1*64*64*64
                                 ac_88 = val_data["ac88"].to(device)  # shape: 4*1*64*64*64
-                                raw=batch_data["raw"]
+                                raw=val_data["raw"]
     
                                 val_labels = val_data["label"].to(device)
                                 output = model(val_inputs)
-                                vloss = 0
+                                vloss_ac = None
+                                vloss_atm = None
                                 if args.indirect:
                                     if args.ac_loss:
                                         recon_ac_44_batch, recon_ac_66_batch, recon_ac_88_batch=spect_ac_recon(raw, output,1,num_input,input_type,val_labels,args.colimator, args.energy_keV)
@@ -322,10 +352,17 @@ def trainer(args):
                                         loss_44 = loss_function(recon_ac_44_batch, ac_44)
                                         loss_66 = loss_function(recon_ac_66_batch, ac_66)
                                         loss_88 = loss_function(recon_ac_88_batch, ac_88)
-                                        vloss+=loss_44+loss_66+loss_88
+                                        vloss_ac = loss_44 + loss_66 + loss_88
                                     if args.atm_loss:
                                         vloss_atm = loss_function(output, val_labels)
-                                        vloss+=vloss_atm
+                                    vloss = combine_weighted_losses(
+                                        loss_ac=vloss_ac,
+                                        loss_atm=vloss_atm,
+                                        lambda_ac=args.lambda_ac,
+                                        lambda_atm=args.lambda_atm,
+                                    )
+                                else:
+                                    raise ValueError("Three-input validation is only implemented for indirect mode.")
                             val_epoch_loss += vloss.item()
                             output=torch.clamp(output, min=0)
                             calculate_metrics(val_labels, output, metrics, 'ATM',loss_function,device)
@@ -467,6 +504,12 @@ def __main__():
         "--indirect", default=True, type=bool, help="if True, training in inderect otherwise in direct method"
     )
     parser.add_argument(
+        "--lambda_atm", default=0.5, type=float, help="weight for the ATM supervision term"
+    )
+    parser.add_argument(
+        "--lambda_ac", default=None, type=float, help="weight for the AC reconstruction supervision term; defaults to 1 - lambda_atm"
+    )
+    parser.add_argument(
         "--colimator", default='SY-LEHR', type=str, help="Colimator type"
     )
     parser.add_argument(
@@ -474,6 +517,8 @@ def __main__():
     )
 
     args = parser.parse_args()
+    if args.lambda_ac is None:
+        args.lambda_ac = 1.0 - args.lambda_atm
     trainer(args)
 if __name__ == "__main__":
     __main__()
