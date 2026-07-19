@@ -212,11 +212,19 @@ This project uses and acknowledges the following third‑party software:
 ## Citation
 
 Hajianfar G, et al. Reconstruction-Informed and Multidomain Deep Learning for Generalizable CT-Free Attenuation Correction in SPECT Myocardial Perfusion Imaging. In submission.
+Ghasem Hajianfar, et al. Reconstruction-informed and multidomain deep learning for generalizable CT-free attenuation correction in SPECT myocardial perfusion imaging, Medical Image Analysis, Volume 113, 2026, 104220, ISSN 1361-8415, https://doi.org/10.1016/j.media.2026.104220.
 
 ```bibtex
-@unpublished{hajianfar_in_submission,
-  author = {Hajianfar, G. and others},
-  title  = {Reconstruction-Informed and Multidomain Deep Learning for Generalizable CT-Free Attenuation Correction in SPECT Myocardial Perfusion Imaging},
-  note   = {In submission}
+@article{HAJIANFAR2026104220,
+title = {Reconstruction-informed and multidomain deep learning for generalizable CT-free attenuation correction in SPECT myocardial perfusion imaging},
+journal = {Medical Image Analysis},
+volume = {113},
+pages = {104220},
+year = {2026},
+issn = {1361-8415},
+doi = {https://doi.org/10.1016/j.media.2026.104220},
+url = {https://www.sciencedirect.com/science/article/pii/S1361841526002896},
+author = {Ghasem Hajianfar and Yazdan Salimi and Mehdi Amini and Xiaotong Hong and René Nkoulou and Elnaz Jenabi and Zahra Mansouri and Atena Aghaee and Soroush Bagheri and Amirhossein Sanaat and Ahmad Bitarafan-Rajabi and Hossein Arabi and Isaac Shiri and Habib Zaidi},
+keywords = {SPECT, Myocardial perfusion imaging, Attenuation correction, Deep learning, Multidomain},
 }
 ```
